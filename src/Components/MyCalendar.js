@@ -8,19 +8,21 @@ import './MyCalendar.css'
 import axios from "axios";
 
 export default class MyCalendar extends Component {
-  state = {
+  constructor(){
+    super()
+    this.state = {
     weekendsVisible: true,
-    currentEvents: [],
-    user: {}
+    currentEvents: []
   };
-
-// componentDidMount = (events) =>{
-//    axios.get('/api/events')
-//   .then(res => {
-//     this.setState({currentEvents: events})
-//   })
-//     .catch(err => console.log(err))
-// }
+  this.handleEventClick = this.handleEventClick.bind(this)
+}
+componentDidMount(){
+   axios.get('/api/events')
+  .then(events => {
+    this.setState({currentEvents: events.data})
+  })
+    .catch(err => console.log(err))
+}
 
 
   render() {
@@ -55,10 +57,9 @@ export default class MyCalendar extends Component {
   renderSidebar() {
     return (
       <div className="demo-app-sidebar">
-  
         <div className='demo-app-sidebar-section'>
           <h2>All Events ({this.state.currentEvents.length})</h2>
-          <ul>{this.state.currentEvents.map(renderSidebarEvent)}</ul>
+          <ul>{this.state.currentEvents?.map(renderSidebarEvent)}</ul>
         </div>
       </div>
     );
@@ -73,8 +74,10 @@ export default class MyCalendar extends Component {
   }
 
   handleDateSelect = (selectInfo) => {
+    
     let title = prompt('Please enter a new title & location for your event');
     let calendarApi = selectInfo.view.calendar;
+    // axios.post('/api/event', {id: createEventId()})
     calendarApi.unselect(); 
 
     if (title) {
@@ -89,7 +92,8 @@ export default class MyCalendar extends Component {
   };
 
   handleEventClick = (clickInfo) => {
-    axios.delete(`/api/event/ ${clickInfo.event.title}`)
+    console.log(clickInfo.event._def.title)
+    axios.delete(`/api/event/${clickInfo.event._def.title}`) .catch(err => console.log(err))
     if (
       window.confirm(
         `Are you sure you want to delete the event '${clickInfo.event.title}'`
@@ -97,19 +101,22 @@ export default class MyCalendar extends Component {
     ) {
       clickInfo.event.remove();
     }
+  
   };
 
   handleEvents = (events) => {
     console.log(JSON.stringify(events))
-    // axios.post('/api/event', (events))
-    // .then (() =>
+    
+    axios.post('/api/event', events)
+    .then (events =>
     this.setState({
-      currentEvents: events
-    })
-  };
+      currentEvents: events.data
+    }))
+  .catch(err => console.log(err))
 }
-
-function renderEventContent(eventInfo) {
+}
+function renderEventContent (eventInfo){
+  
   return (
     <>
       <b>{eventInfo.timeText}</b>
@@ -118,7 +125,7 @@ function renderEventContent(eventInfo) {
   );
 }
 
-function renderSidebarEvent(event) {
+function renderSidebarEvent (event) {
   return (
     <ul key={event.id}>
       <b>

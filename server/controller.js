@@ -12,11 +12,10 @@ module.exports = {
         // const {user_id} = req.session.user
 
         await db.add_events({
-            title2: title, 
-            extendedprops2: extendedProps, 
-            date2: start,
-            time2: time})
-        .then(() => res.sendstatus(200))
+            title, extendedProps, start, time})
+            
+            
+        .then(() => res.sendStatus(200))
         .catch(err => res.status(500).send(err))
     },
     // searchEvent: async (req, res)=> {
@@ -29,11 +28,12 @@ module.exports = {
     // },
     deleteEvent: (req, res) => {
         const {id} = req.params
+        const {title} = req.body
         const db = req.app.get('db')
-
-        db.delete_event([id])
-        .then(() => res.sendstatus(200))
-        .catch(err => res.status(500).send(err))
+        console.log(id)
+        db.delete_event([id, title])
+        .then(() => res.sendStatus(200))
+        // .catch(err => res.status(500).send(err))
     },
     getSessionUser: (req, res) => {
         const {user} =req.session

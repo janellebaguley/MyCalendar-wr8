@@ -3,4 +3,4 @@ insert into events(
     extendedProps,
     start,
     time)
-    values(${title}, ${extendedProps}, ${start}, ${time});
+    values($1, $2, $3, $4);
